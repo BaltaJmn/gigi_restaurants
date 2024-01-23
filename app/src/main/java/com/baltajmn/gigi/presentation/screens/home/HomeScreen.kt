@@ -6,10 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltajmn.gigi.ui.components.LoadingView
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = HomeViewModel(),
+    viewModel: HomeViewModel = koinViewModel(),
     listState: LazyListState,
     navigateToDetails: (Int) -> Unit
 ) {
