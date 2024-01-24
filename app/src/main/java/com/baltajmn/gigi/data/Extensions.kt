@@ -43,6 +43,6 @@ fun DetailsApi.toDomain() = Details(
     description = description ?: "",
     email = email ?: "",
     phone = phone ?: "",
-    rating = rating.toString(),
+    rating = rating?.toString() ?: "",
     ratingUrl = ratingImageUrl ?: ""
 )

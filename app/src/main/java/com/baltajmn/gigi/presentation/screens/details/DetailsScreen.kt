@@ -71,7 +71,7 @@ fun DetailsContent(
             if (it.phone.isNotBlank()) Text(text = "Phone: ${it.phone}")
             if (it.rating.isNotBlank()) Text(text = "Rating: ${it.rating}")
             if (it.ratingUrl.isNotBlank()) AsyncImage(
-                model = "https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/4.5-66827-5.svg",
+                model = it.ratingUrl,
                 contentDescription = it.ratingUrl
             )
         }
