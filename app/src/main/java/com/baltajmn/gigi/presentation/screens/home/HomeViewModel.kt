@@ -36,28 +36,32 @@ class HomeViewModel(
         }
     }
 
+    fun stopLoading() = _uiState.update {
+        it.copy(
+            loading = false
+        )
+    }
+
+
     fun getNearbyLocationsWithCoordinates(latitude: String, longitude: String) {
-        if (_uiState.value.currentCoordinates.isBlank()) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            val coordinatesRestaurant = getNearbyLocations(
+                StringBuilder().apply {
+                    append(latitude)
+                    append(",")
+                    append(longitude)
+                }.toString()
+            )
 
-                val coordinatesRestaurant = getNearbyLocations(
-                    StringBuilder().apply {
-                        append(latitude)
-                        append(",")
-                        append(longitude)
-                    }.toString()
+            val favoriteRestaurant = getFavoritesList()
+
+            _uiState.update {
+                it.copy(
+                    loading = false,
+                    currentCoordinates = "$latitude,$longitude",
+                    coordinatesRestaurant = coordinatesRestaurant,
+                    favoriteRestaurant = favoriteRestaurant
                 )
-
-                val favoriteRestaurant = getFavoritesList()
-
-                _uiState.update {
-                    it.copy(
-                        loading = false,
-                        currentCoordinates = "$latitude,$longitude",
-                        coordinatesRestaurant = coordinatesRestaurant,
-                        favoriteRestaurant = favoriteRestaurant
-                    )
-                }
             }
         }
     }

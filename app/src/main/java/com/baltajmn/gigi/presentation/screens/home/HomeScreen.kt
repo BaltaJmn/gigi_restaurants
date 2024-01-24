@@ -1,8 +1,10 @@
 package com.baltajmn.gigi.presentation.screens.home
 
-import android.Manifest
-import android.app.Activity
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.baltajmn.gigi.core.common.components.ComposableLifecycle
@@ -50,15 +52,37 @@ fun HomeScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    requestPermission(context = context as Activity) { latitude, longitude ->
-        viewModel.getNearbyLocationsWithCoordinates(
-            latitude = latitude,
-            longitude = longitude
-        )
-    }
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted: Boolean ->
+            if (isGranted) {
+                getCurrentLocation(context) { latitude, longitude ->
+                    viewModel.getNearbyLocationsWithCoordinates(
+                        latitude = latitude,
+                        longitude = longitude
+                    )
+                }
+            } else {
+                viewModel.stopLoading()
+            }
+        }
+    )
 
     ComposableLifecycle { _, event ->
         when (event) {
+            Lifecycle.Event.ON_START -> {
+                if (hasLocationPermission(context)) {
+                    getCurrentLocation(context) { latitude, longitude ->
+                        viewModel.getNearbyLocationsWithCoordinates(
+                            latitude = latitude,
+                            longitude = longitude
+                        )
+                    }
+                } else {
+                    requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                }
+            }
+
             Lifecycle.Event.ON_RESUME -> {
                 viewModel.refreshFavorites()
             }
@@ -105,11 +129,18 @@ fun HomeContent(
         item { Text(text = "Restaurants near you", style = MaterialTheme.typography.bodyMedium) }
         item { Spacer(modifier = Modifier.height(8.dp)) }
         item {
-            NearContent(
-                state = state,
-                onFavoriteClicked = { viewModel.addLocationToFavorites(it) },
-                navigateToDetails = navigateToDetails
-            )
+            if (state.coordinatesRestaurant.isNotEmpty()) {
+                NearContent(
+                    state = state,
+                    onFavoriteClicked = { viewModel.addLocationToFavorites(it) },
+                    navigateToDetails = navigateToDetails
+                )
+            } else {
+                Text(
+                    text = "No restaurants found or you don't have the location permission",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
         item { Spacer(modifier = Modifier.height(8.dp)) }
         item { Text(text = "Search restaurants", style = MaterialTheme.typography.bodyMedium) }
@@ -171,29 +202,25 @@ fun LocationRow(
     }
 }
 
-fun requestPermission(context: Activity, onPermissionGranted: (String, String) -> Unit) {
-    if (ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) != PackageManager.PERMISSION_GRANTED
-    ) {
-        ActivityCompat.requestPermissions(
-            context,
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ),
-            101
-        )
-    }
+private fun hasLocationPermission(context: Context): Boolean {
+    return ContextCompat.checkSelfPermission(
+        context,
+        android.Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
+}
 
-    LocationServices.getFusedLocationProviderClient(context).lastLocation.addOnSuccessListener { location ->
-        onPermissionGranted.invoke(
-            location.latitude.toString(),
-            location.longitude.toString()
-        )
-    }
+@SuppressLint("MissingPermission")
+private fun getCurrentLocation(context: Context, onPermissionGranted: (String, String) -> Unit) {
+    LocationServices.getFusedLocationProviderClient(context).lastLocation
+        .addOnSuccessListener { location ->
+            if (location != null) {
+                onPermissionGranted.invoke(
+                    location.latitude.toString(),
+                    location.longitude.toString()
+                )
+            }
+        }
+        .addOnFailureListener { exception ->
+            exception.printStackTrace()
+        }
 }
