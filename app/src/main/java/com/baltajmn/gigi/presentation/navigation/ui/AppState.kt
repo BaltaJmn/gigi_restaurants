@@ -33,10 +33,6 @@ class AppState(
         mainNavController.navigateUp()
     }
 
-    fun navigateToHome() {
-        mainNavController.navigatePoppingUpToStartDestination(MainGraph.Home.route)
-    }
-
     fun navigateToDetails(id: Int) {
         mainNavController.navigate(MainGraph.Details.route.replace("{id}", id.toString()))
     }

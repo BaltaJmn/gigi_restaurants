@@ -32,7 +32,8 @@ import com.baltajmn.gigi.presentation.screens.home.HomeState
 @Composable
 fun NearContent(
     state: HomeState,
-    onFavoriteClicked: (Location) -> Unit
+    onFavoriteClicked: (Location) -> Unit,
+    navigateToDetails: (Int) -> Unit
 ) {
     LazyRow(
         state = rememberLazyListState(),
@@ -41,7 +42,9 @@ fun NearContent(
     ) {
         items(state.coordinatesRestaurant) { location ->
             NearItem(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navigateToDetails.invoke(location.locationId) },
                 location = location,
                 isFavorite = state.favoriteRestaurant.map { it.id }
                     .any { it == location.locationId },

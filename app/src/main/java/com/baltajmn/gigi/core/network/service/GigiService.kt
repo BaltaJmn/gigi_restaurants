@@ -1,6 +1,7 @@
 package com.baltajmn.gigi.core.network.service
 
 import com.baltajmn.gigi.BuildConfig
+import com.baltajmn.gigi.core.network.model.DetailsApi
 import com.baltajmn.gigi.core.network.model.LocationApi
 import com.baltajmn.gigi.core.network.model.ResponseLocationApi
 import com.google.gson.Gson
@@ -47,6 +48,22 @@ class GigiService(
             ).data
         } catch (e: Exception) {
             emptyList()
+        }
+    }
+
+    suspend fun getDetails(id: String): DetailsApi {
+        return try {
+            val response: HttpResponse = httpClient.get("/api/v1/location/$id/details") {
+                parameter("key", BuildConfig.API_KEY)
+                parameter("location_id", id)
+            }.body()
+
+            Gson().fromJson(
+                response.bodyAsText(),
+                DetailsApi::class.java
+            )
+        } catch (e: Exception) {
+            DetailsApi("", "", "", "", 0f, "")
         }
     }
 

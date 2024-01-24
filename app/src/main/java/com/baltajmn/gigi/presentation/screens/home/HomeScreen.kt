@@ -107,7 +107,8 @@ fun HomeContent(
         item {
             NearContent(
                 state = state,
-                onFavoriteClicked = { viewModel.addLocationToFavorites(it) }
+                onFavoriteClicked = { viewModel.addLocationToFavorites(it) },
+                navigateToDetails = navigateToDetails
             )
         }
         item { Spacer(modifier = Modifier.height(8.dp)) }
@@ -131,7 +132,8 @@ fun HomeContent(
                 location = location,
                 isFavorite = state.favoriteRestaurant.map { it.id }
                     .any { it == location.locationId },
-                onFavoriteClicked = { viewModel.addLocationToFavorites(it) }
+                onFavoriteClicked = { viewModel.addLocationToFavorites(it) },
+                navigateToDetails = navigateToDetails
             )
         }
     }
@@ -141,12 +143,14 @@ fun HomeContent(
 fun LocationRow(
     location: Location,
     isFavorite: Boolean = false,
-    onFavoriteClicked: (Location) -> Unit
+    onFavoriteClicked: (Location) -> Unit,
+    navigateToDetails: (Int) -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp),
+            .height(48.dp)
+            .clickable { navigateToDetails.invoke(location.locationId) },
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

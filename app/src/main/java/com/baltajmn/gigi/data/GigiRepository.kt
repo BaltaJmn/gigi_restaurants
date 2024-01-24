@@ -3,6 +3,7 @@ package com.baltajmn.gigi.data
 import com.baltajmn.gigi.core.db.datasource.FavoritesDao
 import com.baltajmn.gigi.core.db.model.FavoritesDB
 import com.baltajmn.gigi.core.network.datasource.NetworkGigiDatasource
+import com.baltajmn.gigi.domain.model.Details
 import com.baltajmn.gigi.domain.model.Favorites
 import com.baltajmn.gigi.domain.model.Location
 
@@ -13,6 +14,7 @@ interface GigiRepository {
     suspend fun getFavoritesList(): List<Favorites>
     suspend fun updateFavoriteList(location: Location, hasToDelete: Boolean): List<Favorites>
     suspend fun removeFavorite(id: Int): List<Favorites>
+    suspend fun getDetails(id: String): Details
 }
 
 class DefaultGigiRepository(
@@ -56,4 +58,7 @@ class DefaultGigiRepository(
         return favoritesDao.getFavoritesList()?.map { it.toDomain() } ?: emptyList()
     }
 
+    override suspend fun getDetails(id: String): Details {
+        return networkGigiDatasource.getDetails(id = id).toDomain()
+    }
 }

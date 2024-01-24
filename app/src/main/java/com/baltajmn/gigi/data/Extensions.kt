@@ -3,8 +3,10 @@ package com.baltajmn.gigi.data
 import com.baltajmn.gigi.core.common.showDistance
 import com.baltajmn.gigi.core.db.model.FavoritesDB
 import com.baltajmn.gigi.core.network.model.AddressObj
+import com.baltajmn.gigi.core.network.model.DetailsApi
 import com.baltajmn.gigi.core.network.model.LocationApi
 import com.baltajmn.gigi.domain.model.Address
+import com.baltajmn.gigi.domain.model.Details
 import com.baltajmn.gigi.domain.model.Favorites
 import com.baltajmn.gigi.domain.model.Location
 
@@ -36,3 +38,11 @@ fun FavoritesDB.toDomain() = Favorites(
     name = name
 )
 
+fun DetailsApi.toDomain() = Details(
+    name = name,
+    description = description ?: "",
+    email = email ?: "",
+    phone = phone ?: "",
+    rating = rating.toString(),
+    ratingUrl = ratingImageUrl ?: ""
+)

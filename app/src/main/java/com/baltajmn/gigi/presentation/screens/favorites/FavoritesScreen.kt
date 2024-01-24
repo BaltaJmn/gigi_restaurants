@@ -80,7 +80,8 @@ fun FavoritesContent(
         items(state.favoriteRestaurant) { favorite ->
             FavoriteItem(
                 favorite = favorite,
-                onRemoveClick = { viewModel.removeFavorite(favorite) }
+                onRemoveClick = { viewModel.removeFavorite(favorite) },
+                navigateToDetails = navigateToDetails
             )
         }
     }
@@ -89,7 +90,8 @@ fun FavoritesContent(
 @Composable
 fun FavoriteItem(
     favorite: Favorites,
-    onRemoveClick: () -> Unit
+    onRemoveClick: () -> Unit,
+    navigateToDetails: (Int) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -98,7 +100,8 @@ fun FavoriteItem(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.onSurface,
                 shape = MaterialTheme.shapes.small
-            ),
+            )
+            .clickable { navigateToDetails.invoke(favorite.id) },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

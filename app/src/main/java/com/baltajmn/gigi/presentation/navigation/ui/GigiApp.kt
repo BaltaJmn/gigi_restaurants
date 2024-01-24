@@ -42,20 +42,10 @@ fun GigiNavHost(
         }
 
         composable(
-            route = MainGraph.Home.route
-        ) {
-            HomeScreen(
-                listState = rememberLazyListState(),
-                navigateToDetails = { id: Int -> appState.navigateToDetails(id) }
-            )
-        }
-
-        composable(
             route = MainGraph.Details.route,
             arguments = listOf(navArgument("id") { type = NavType.StringType })
         ) {
             DetailsScreen(
-                listState = rememberLazyListState(),
                 onBackPressed = { appState.navigateUp() }
             )
         }
