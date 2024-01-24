@@ -98,7 +98,6 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.play.services.location)
-    testImplementation("org.testng:testng:6.9.6")
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.gson)
@@ -107,7 +106,13 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.lottie.compose)
 
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.test)
+    testImplementation(libs.junit.junit)
+    testImplementation("org.mockito:mockito-core:3.11.2")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
+    testImplementation("org.mockito:mockito-inline:3.11.2")
+
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
