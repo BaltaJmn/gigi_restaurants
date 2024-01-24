@@ -1,6 +1,9 @@
 package com.baltajmn.gigi.core.network.service
 
 import com.baltajmn.gigi.BuildConfig
+import com.baltajmn.gigi.core.network.model.LocationApi
+import com.baltajmn.gigi.core.network.model.ResponseLocationApi
+import com.google.gson.Gson
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -12,15 +15,38 @@ class GigiService(
     private val httpClient: HttpClient
 ) {
 
-    suspend fun getNearbyLocations(latLong: String): String {
+    suspend fun getLocations(name: String, latLong: String): List<LocationApi> {
+        return try {
+            val response: HttpResponse = httpClient.get("/api/v1/location/search") {
+                parameter("key", BuildConfig.API_KEY)
+                parameter("category", "restaurants")
+                parameter("latLong", latLong)
+                parameter("searchQuery", name)
+            }.body()
+
+            Gson().fromJson(
+                response.bodyAsText(),
+                ResponseLocationApi::class.java
+            ).data
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun getNearbyLocations(latLong: String): List<LocationApi> {
         return try {
             val response: HttpResponse = httpClient.get("/api/v1/location/nearby_search") {
                 parameter("key", BuildConfig.API_KEY)
-                parameter("latLong", "42.3455,-71.10767")
+                parameter("category", "restaurants")
+                parameter("latLong", latLong)
             }.body()
-            response.bodyAsText()
+
+            Gson().fromJson(
+                response.bodyAsText(),
+                ResponseLocationApi::class.java
+            ).data
         } catch (e: Exception) {
-            ""
+            emptyList()
         }
     }
 

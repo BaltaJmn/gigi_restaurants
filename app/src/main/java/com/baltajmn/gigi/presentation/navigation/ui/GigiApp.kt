@@ -13,6 +13,7 @@ import com.baltajmn.gigi.presentation.navigation.graphs.GRAPH
 import com.baltajmn.gigi.presentation.navigation.graphs.MainGraph
 import com.baltajmn.gigi.presentation.screens.details.DetailsScreen
 import com.baltajmn.gigi.presentation.screens.home.HomeScreen
+import com.baltajmn.gigi.presentation.screens.main.MainScreen
 import com.baltajmn.gigi.ui.theme.GigiTheme
 
 @Composable
@@ -32,8 +33,14 @@ fun GigiNavHost(
         modifier = Modifier.background(color = MaterialTheme.colorScheme.background),
         navController = appState.mainNavController,
         route = GRAPH.Main,
-        startDestination = MainGraph.Home.route
+        startDestination = MainGraph.Main.route
     ) {
+        composable(
+            route = MainGraph.Main.route
+        ){
+            MainScreen(navigateToDetails = { id: Int -> appState.navigateToDetails(id) })
+        }
+
         composable(
             route = MainGraph.Home.route
         ) {

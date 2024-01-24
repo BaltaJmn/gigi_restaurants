@@ -1,5 +1,6 @@
 package com.baltajmn.gigi.di
 
+import com.baltajmn.gigi.core.db.di.DatabaseModule
 import com.baltajmn.gigi.core.network.di.NetworkModule
 import com.baltajmn.gigi.data.di.DataModule
 import com.baltajmn.gigi.domain.di.DomainModule
@@ -12,6 +13,7 @@ val GigiModules: Module
         includes(
             listOf(
                 NetworkModule,
+                DatabaseModule,
                 DataModule,
                 DomainModule,
                 PresentationModule

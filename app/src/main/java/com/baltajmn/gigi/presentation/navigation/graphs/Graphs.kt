@@ -5,6 +5,7 @@ object GRAPH {
 }
 
 enum class MainGraph(val route: String) {
+    Main("main"),
     Home("home"),
     Details("details/{id}"),
 }

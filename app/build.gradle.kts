@@ -40,6 +40,14 @@ android {
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_11.toString()
+        val warningsAsErrors: String? by project
+        allWarningsAsErrors = warningsAsErrors.toBoolean()
+        freeCompilerArgs = freeCompilerArgs + listOf(
+            "-opt-in=kotlin.RequiresOptIn",
+            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-opt-in=kotlinx.coroutines.FlowPreview",
+        )
+        freeCompilerArgs = freeCompilerArgs + listOf("-Xcontext-receivers")
     }
     buildFeatures {
         compose = true
@@ -89,6 +97,8 @@ dependencies {
     implementation(libs.com.google.devtools.ksp.gradle.plugin)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.play.services.location)
+    testImplementation("org.testng:testng:6.9.6")
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.gson)
